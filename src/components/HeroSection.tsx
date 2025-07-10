@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Info, Volume2, VolumeX } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
 import VideoPlayer from './VideoPlayer';
 
 interface Movie {
@@ -26,7 +25,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ items = [], loading = false, 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
-  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!items || items.length === 0) return;
@@ -41,18 +39,16 @@ const HeroSection: React.FC<HeroSectionProps> = ({ items = [], loading = false, 
   // Early return for loading or empty states
   if (loading || !items || items.length === 0) {
     return (
-      <div className={`relative bg-gradient-to-r from-gray-900 to-gray-800 animate-pulse ${
-        isMobile ? 'h-[70vh] pt-[60px]' : 'h-screen pt-[128px]'
-      }`}>
-        <div className={`absolute inset-0 bg-black/50 ${isMobile ? 'top-[60px]' : 'top-[128px]'}`} />
+      <div className="relative h-screen pt-[128px] bg-gradient-to-r from-gray-900 to-gray-800 animate-pulse">
+        <div className="absolute inset-0 top-[128px] bg-black/50" />
         <div className="absolute bottom-0 left-0 right-0 p-4 md:p-12">
           <div className="max-w-2xl">
-            <div className={`bg-gray-700 rounded mb-4 ${isMobile ? 'h-12' : 'h-16'}`} />
+            <div className="h-16 bg-gray-700 rounded mb-4" />
             <div className="h-4 bg-gray-700 rounded mb-2" />
             <div className="h-4 bg-gray-700 rounded w-3/4 mb-6" />
-            <div className={`flex gap-4 ${isMobile ? 'flex-col' : ''}`}>
-              <div className={`bg-gray-700 rounded ${isMobile ? 'h-12 w-full' : 'h-12 w-32'}`} />
-              <div className={`bg-gray-700 rounded ${isMobile ? 'h-12 w-full' : 'h-12 w-32'}`} />
+            <div className="flex gap-4">
+              <div className="h-12 w-32 bg-gray-700 rounded" />
+              <div className="h-12 w-32 bg-gray-700 rounded" />
             </div>
           </div>
         </div>
@@ -67,11 +63,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({ items = [], loading = false, 
   // Safety check for currentMovie
   if (!currentMovie) {
     return (
-      <div className={`relative bg-black flex items-center justify-center ${
-        isMobile ? 'h-[70vh] pt-[60px]' : 'h-screen pt-[128px]'
-      }`}>
+      <div className="relative h-screen pt-[128px] bg-black flex items-center justify-center">
         <div className="text-white text-center">
-          <p className={isMobile ? 'text-lg' : 'text-xl'}>No movies available</p>
+          <p className="text-xl">No movies available</p>
         </div>
       </div>
     );
@@ -111,83 +105,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ items = [], loading = false, 
       console.error('Error opening movie modal:', error);
     }
   };
-
-  if (isMobile) {
-    return (
-      <div className="relative h-[70vh] pt-[60px] overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0 top-[60px]">
-          {backdropPath ? (
-            <img
-              src={`${imageBaseUrl}${backdropPath}`}
-              alt={title}
-              className="w-full h-full object-cover transition-opacity duration-1000"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-r from-gray-900 to-gray-800" />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30" />
-        </div>
-
-        {/* Content */}
-        <div className="relative z-10 h-full flex items-end pb-8">
-          <div className="w-full px-4">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3 leading-tight">
-              {title}
-            </h1>
-            
-            <p className="text-sm text-gray-200 mb-6 leading-relaxed line-clamp-2 max-w-md">
-              {overview}
-            </p>
-
-            <div className="flex gap-3 mb-6">
-              <button
-                onClick={handleWatchNow}
-                className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-all"
-              >
-                <Play size={18} />
-                Watch
-              </button>
-              
-              <button
-                onClick={handleMoreInfo}
-                className="flex items-center gap-2 bg-gray-700/90 text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-600/90 transition-all backdrop-blur-sm"
-              >
-                <Info size={18} />
-                Info
-              </button>
-            </div>
-
-            {/* Movie Indicators */}
-            {items.length > 1 && (
-              <div className="flex gap-2 justify-center">
-                {items.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentIndex(index)}
-                    className={`w-8 h-1 rounded-full transition-all duration-300 ${
-                      index === safeCurrentIndex ? 'bg-white' : 'bg-gray-500 hover:bg-gray-400'
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Mute Button */}
-          <button
-            onClick={() => setIsMuted(!isMuted)}
-            className="absolute bottom-6 right-4 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all backdrop-blur-sm"
-          >
-            {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="relative h-screen pt-[128px] overflow-hidden">

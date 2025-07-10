@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
 import MovieCard from './MovieCard';
 import { Movie, TVShow } from '@/services/api';
 
@@ -18,11 +17,10 @@ const MovieRow: React.FC<MovieRowProps> = ({ title, movies, loading = false, onI
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
-  const isMobile = useIsMobile();
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      const scrollAmount = isMobile ? 250 : 1200;
+      const scrollAmount = 1200;
       const newScrollLeft = scrollRef.current.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
       
       scrollRef.current.scrollTo({
@@ -75,16 +73,11 @@ const MovieRow: React.FC<MovieRowProps> = ({ title, movies, loading = false, onI
 
   if (loading) {
     return (
-      <div className={isMobile ? 'mb-8' : 'mb-12'}>
-        <h2 className={`font-bold text-white mb-4 px-4 md:px-12 ${isMobile ? 'text-xl' : 'text-2xl'}`}>{title}</h2>
-        <div className={`flex gap-3 px-4 md:px-12 ${isMobile ? 'gap-2' : 'gap-4'}`}>
-          {Array.from({ length: isMobile ? 3 : 6 }).map((_, index) => (
-            <div 
-              key={index} 
-              className={`bg-gray-800 rounded-lg animate-pulse flex-shrink-0 ${
-                isMobile ? 'w-32 h-48' : 'w-64 h-96'
-              }`} 
-            />
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-white mb-6 px-4 md:px-12">{title}</h2>
+        <div className="flex gap-4 px-4 md:px-12">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="w-64 h-96 bg-gray-800 rounded-lg animate-pulse flex-shrink-0" />
           ))}
         </div>
       </div>
@@ -96,12 +89,12 @@ const MovieRow: React.FC<MovieRowProps> = ({ title, movies, loading = false, onI
   }
 
   return (
-    <div className={`group ${isMobile ? 'mb-8' : 'mb-12'}`}>
-      <h2 className={`font-bold text-white mb-4 px-4 md:px-12 ${isMobile ? 'text-xl' : 'text-2xl'}`}>{title}</h2>
+    <div className="mb-12 group">
+      <h2 className="text-2xl font-bold text-white mb-6 px-4 md:px-12">{title}</h2>
       
       <div className="relative px-4 md:px-12">
-        {/* Left Arrow - Hidden on mobile */}
-        {!isMobile && showLeftArrow && (
+        {/* Left Arrow */}
+        {showLeftArrow && (
           <button
             onClick={() => scroll('left')}
             className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-black text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
@@ -110,8 +103,8 @@ const MovieRow: React.FC<MovieRowProps> = ({ title, movies, loading = false, onI
           </button>
         )}
 
-        {/* Right Arrow - Hidden on mobile */}
-        {!isMobile && showRightArrow && (
+        {/* Right Arrow */}
+        {showRightArrow && (
           <button
             onClick={() => scroll('right')}
             className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-black text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
@@ -123,26 +116,21 @@ const MovieRow: React.FC<MovieRowProps> = ({ title, movies, loading = false, onI
         {/* Movies Container */}
         <div
           ref={scrollRef}
-          onMouseDown={!isMobile ? handleMouseDown : undefined}
-          onMouseMove={!isMobile ? handleMouseMove : undefined}
-          onMouseUp={!isMobile ? handleMouseUp : undefined}
-          onMouseLeave={!isMobile ? handleMouseLeave : undefined}
-          className={`flex overflow-x-auto scrollbar-hide pb-4 ${
-            isMobile 
-              ? 'gap-2 snap-x snap-mandatory' 
-              : `gap-4 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`
-          }`}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          className={`flex gap-4 overflow-x-auto scrollbar-hide pb-4 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
           style={{ 
             scrollbarWidth: 'none', 
             msOverflowStyle: 'none',
-            userSelect: isMobile ? 'auto' : 'none'
+            userSelect: 'none'
           }}
         >
           {movies.map((movie) => (
             <MovieCard 
               key={movie.id} 
               movie={movie} 
-              size={isMobile ? 'small' : 'medium'}
               onItemClick={onItemClick}
             />
           ))}
